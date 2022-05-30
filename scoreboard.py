@@ -205,17 +205,35 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
             ]
             ,[sg.HorizontalSeparator()]
             ,[sg.Button('M', button_color=('black', 'white'), key='b0')
+              ,sg.VerticalSeparator()
               ,sg.Button('K', button_color=('black', 'white'), key='b1')
+              ,sg.VerticalSeparator()
               ,sg.Button('D', button_color=('black', 'white'), key='b2')
+              ,sg.VerticalSeparator()
               ,sg.Button('T', button_color=('black', 'white'), key='b3')
+              ,sg.VerticalSeparator()
               ,sg.Button('▲', button_color=('black', 'white'), key='b4')
+              ,sg.VerticalSeparator()
+              ,sg.Button('Q', button_color=('black', 'white'), key='u0')
+              ,sg.VerticalSeparator()
               ,sg.Push()
+              ,sg.VerticalSeparator()
+              ,sg.Button('Q', button_color=('black', 'white'), key='u2')
+              ,sg.VerticalSeparator()
               ,sg.Button('Next Fight', key='b5')
+              ,sg.VerticalSeparator()
               ,sg.Push()
+              ,sg.VerticalSeparator()
+              ,sg.Button('Q', button_color=('black', 'white'), key='u1')
+              ,sg.VerticalSeparator()
               ,sg.Button('▲', button_color=('black', 'white'), key='b6')
+              ,sg.VerticalSeparator()
               ,sg.Button('T', button_color=('black', 'white'), key='b7')
+              ,sg.VerticalSeparator()
               ,sg.Button('D', button_color=('black', 'white'), key='b8')
+              ,sg.VerticalSeparator()
               ,sg.Button('K', button_color=('black', 'white'), key='b9')
+              ,sg.VerticalSeparator()
               ,sg.Button('M', button_color=('black', 'white'), key='b10')
               ]
             
@@ -224,6 +242,21 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
 # Create the Window
 window = sg.Window('Window Title', layout, resizable=True, finalize=True)
 window.bind('<Configure>', "Configure")
+window.bind('<Key-q>',"b0")
+window.bind('<Key-w>',"b1")
+window.bind('<Key-e>',"b2")
+window.bind('<Key-r>',"b3")
+window.bind('<Key-t>',"b4")
+window.bind('<Key-p>',"b10")
+window.bind('<Key-o>',"b9")
+window.bind('<Key-i>',"b8")
+window.bind('<Key-u>',"b7")
+window.bind('<Key-y>',"b6")
+window.bind('<Key-a>',"u0")
+window.bind('<Key-l>',"u1")
+window.bind('<space>',"u2")
+window.bind('<Return>',"b5")
+
 #fs = round(window.size[1]/20)
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
@@ -254,6 +287,7 @@ while True:
         [window[f'redHansoku[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
         [window[f'hikiwake[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
         [window[f'b{i}'].Widget.config(font=('arial',round(fs/2))) for i in range(0,11)]
+        [window[f'u{i}'].Widget.config(font=('Wingdings 3',round(fs/2))) for i in range(0,3)]
     if event == 'b5':
         if len(redIppon[fn][0]+redIppon[fn][1]) == len(whiteIppon[fn][0]+whiteIppon[fn][1]):
             #print('draw')
@@ -272,6 +306,17 @@ while True:
             window['white'+str(fn)].Update(background_color='grey')
             window['red'+str(fn)].Update(background_color='grey')
             #print(fn)
+    if event == 'u2':
+        if fn > 0:
+            print(fn)
+            window['white'+str(fn)].Update(background_color='white')
+            window['red'+str(fn)].Update(background_color='white')
+            fn = fn - 1
+            window['white'+str(fn)].Update(background_color='grey')
+            window['red'+str(fn)].Update(background_color='grey')
+            hikiwake[fn] = ''
+            window['hikiwake[' +str(fn) + ']'].Update('')
+            print(fn)
     if event == 'b10':
         #print('Men')
         #print('fn:',fn)
@@ -447,7 +492,40 @@ while True:
                 print(rp)
             else:
                 print('error')
-        
+
+    if event == 'u0':
+        if whiteIppon[fn][1] != '':
+            whiteIppon[fn][1] = ''
+            window['whiteIppon[' + str(fn) + '][1]'].Update('')
+            wp = wp - 1
+            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
+            print(wp)
+        elif whiteIppon[fn][0] != '':
+            whiteIppon[fn][0] = ''
+            window['whiteIppon[' + str(fn) + '][0]'].Update('')
+            wp = wp - 1
+            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
+            print(wp)
+        else:
+            print('error')
+            
+
+    if event == 'u1':
+        if redIppon[fn][1] != '':
+            redIppon[fn][1] = ''
+            window['redIppon[' + str(fn) + '][1]'].Update('')
+            rp = rp - 1
+            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
+            print(wp)
+        elif redIppon[fn][0] != '':
+            redIppon[fn][0] = ''
+            window['redIppon[' + str(fn) + '][0]'].Update('')
+            rp = rp - 1
+            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
+            print(wp)
+        else:
+            print('error')
+            
     if event == sg.WIN_CLOSED or event == 'Cancel': # if user closes window or clicks cancel
         break
     

@@ -24,21 +24,28 @@ def fontResize(fs):
     [window[f'hikiwake[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
     [window[f'b{i}'].Widget.config(font=('arial',round(fs/2))) for i in range(0,11)]
     window['undo'].Widget.config(font=('Wingdings 3',round(fs/2)))
-
+    [window[f'd{i}'].Update(font=('arial',fs)) for i in range(0,11)]
+    
 def updateIpponColumn(symbol,colour,fn):
     global actionLog
-    if eval(colour + 'Ippon[fn][0]') == '':
-        exec(colour + 'Ippon[fn][0] = "' + symbol + '"')
-        window[colour + 'Ippon[' + str(fn) + '][0]'].Update(symbol)
-        actionLog.append(colour + 'Ippon[' + str(fn) + '][0]')
-        actionLog.append(colour)
-        actionLog.append('ippon')
-    elif eval(colour + 'Ippon[fn][1]') == '':
-        exec(colour + 'Ippon[fn][1] = "' + symbol + '"')
-        window[colour + 'Ippon[' + str(fn) + '][1]'].Update(symbol)
-        actionLog.append(colour + 'Ippon[' + str(fn) + '][1]')
-        actionLog.append(colour)
-        actionLog.append('ippon')
+    if fn == 6:
+        if colour == 'white':
+            window['d2'].Update(symbol)
+        else:
+            window['d8'].Update(symbol)
+    else:
+        if eval(colour + 'Ippon[fn][0]') == '':
+            exec(colour + 'Ippon[fn][0] = "' + symbol + '"')
+            window[colour + 'Ippon[' + str(fn) + '][0]'].Update(symbol)
+            actionLog.append(colour + 'Ippon[' + str(fn) + '][0]')
+            actionLog.append(colour)
+            actionLog.append('ippon')
+        elif eval(colour + 'Ippon[fn][1]') == '':
+            exec(colour + 'Ippon[fn][1] = "' + symbol + '"')
+            window[colour + 'Ippon[' + str(fn) + '][1]'].Update(symbol)
+            actionLog.append(colour + 'Ippon[' + str(fn) + '][1]')
+            actionLog.append(colour)
+            actionLog.append('ippon')
     points = eval(colour + 'Points') + 1
     window[colour + 'Sum'].Update('Wins: ' + str(eval(colour + 'Wins')) + '  Points: ' + str(points))
     return points
@@ -291,6 +298,30 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
              ,sg.VerticalSeparator()
              ,sg.Text('5', size=(2, 1), font=('arial',fs), key='red4')]
             ,[sg.HorizontalSeparator()]
+            ,[sg.Text('', size=(2, 1), key='d0')
+             ,sg.VerticalSeparator()
+             ,sg.Text('', size=(len(nl), 1), key='d1')
+             ,sg.Push()
+             ,sg.VerticalSeparator()
+             ,sg.Text('', size=(2, 1), key='d2')
+             ,sg.VerticalSeparator()
+             ,sg.Text('', size=(2, 1), key='d3')
+             ,sg.VerticalSeparator()
+             ,sg.Text('', size=(2, 1), key='d4')
+             ,sg.VerticalSeparator()
+             ,sg.Text('', size=(2, 1), key='d5')
+             ,sg.VerticalSeparator()
+             ,sg.Text('', size=(2, 1), key='d6')
+             ,sg.VerticalSeparator()
+             ,sg.Text('', size=(2, 1), key='d7')
+             ,sg.VerticalSeparator()
+             ,sg.Text('', size=(2, 1), key='d8')
+             ,sg.VerticalSeparator()
+             ,sg.Push()
+             ,sg.Text('', size=(len(nl), 1), key='d9')
+             ,sg.VerticalSeparator()
+             ,sg.Text('', size=(2, 1), font=('arial',fs), key='d10')]
+            ,[sg.HorizontalSeparator()]
             ,[sg.Text('Wins: ' + str(whiteWins) + '  Points: ' + str(whitePoints), key='whiteSum')
               ,sg.Push()
               ,sg.Text('Wins: ' + str(redWins) + '  Points: ' + str(redPoints), key='redSum')]
@@ -351,6 +382,7 @@ window.bind('<Delete>',"undo")
 window.bind('<BackSpace>',"undo")
 window.bind('<Return>',"b5")
 
+
 #fs = round(window.size[1]/20)
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
@@ -367,6 +399,8 @@ while True:
         print(results)
         print(redWins)
         print(whiteWins)
+        print(redPoints)
+        print(whitePoints)
         actionLog.append('hikiwake[' +str(fn) + ']')
         if results[fn][1] == results[fn][0]:
             hikiwake[fn] = 'X'
@@ -394,14 +428,22 @@ while True:
                 window['victor'].Update('Victor: ' + currentRedTeam)
             elif whiteWins > redWins:
                 window['victor'].Update('Victor: ' + currentWhiteTeam)
-            elif redPoints > whiteWins:
+            elif redPoints > whitePoints:
                 window['victor'].Update('Victor: ' + currentRedTeam)
             elif whitePoints > redPoints:
                 window['victor'].Update('Victor: ' + currentWhiteTeam)
             else:
-                daihosen = sg.popup_yes_no(title='Daihosen?')
+                daihosen = sg.popup_yes_no('Daihosen?',title='Daihosen?',modal=True,)
                 if daihosen == 'Yes':
+                    fn = 6
                     window['victor'].Update('Daihosen')
+                    whiteD = sg.popup_get_text('White Player',background_color='grey')
+                    redD = sg.popup_get_text('Red Player',background_color='grey')
+                    window['d0'].Update('D')
+                    window['d1'].Update(whiteD)
+                    window['d9'].Update(redD)
+                    window['d10'].Update('D')
+                    
                 else:
                     window['victor'].Update('Draw')
             

@@ -17,8 +17,6 @@ r= White Tsuki
 \
 t= White Hansoku
 \
-a= Undo Last White Ippon
-\
 p= Red Men
 \
 o= Red Kote
@@ -29,8 +27,6 @@ u= Red Tsuki
 \
 y= Red Hansoku
 \
-l= Undo Last Red Ippon
-\
 Return= Next fight
 \
-Spacebar= Go Back a Fight
+BackSpace or Delete = Undo Last Action

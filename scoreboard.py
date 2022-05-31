@@ -1,5 +1,99 @@
 import PySimpleGUI as sg
 
+
+def fontResize(fs):
+    [window[f'blank{i}'].Update(font=('arial',fs)) for i in range(0,9)]
+    window['whiteName'].Update(font=('arial',fs))
+    window['redName'].Update(font=('arial',fs))
+    window['nextMatch'].Update(font=('arial',fs))
+    window['nextWhiteTeam'].Update(font=('arial',fs))
+    window['nextRedTeam'].Update(font=('arial',fs))
+    window['redSum'].Update(font=('arial',fs))
+    window['whiteSum'].Update(font=('arial',fs))
+    window['victor'].Update(font=('arial',fs))
+    [window[f'white{i}'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'red{i}'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'whiteNames[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'redNames[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'whiteIppon[{i}][0]'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'whiteIppon[{i}][1]'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'whiteHansoku[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'redIppon[{i}][0]'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'redIppon[{i}][1]'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'redHansoku[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'hikiwake[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'b{i}'].Widget.config(font=('arial',round(fs/2))) for i in range(0,11)]
+    window['undo'].Widget.config(font=('Wingdings 3',round(fs/2)))
+
+def updateIpponColumn(symbol,colour,fn):
+    global actionLog
+    if eval(colour + 'Ippon[fn][0]') == '':
+        exec(colour + 'Ippon[fn][0] = "' + symbol + '"')
+        window[colour + 'Ippon[' + str(fn) + '][0]'].Update(symbol)
+        actionLog.append(colour + 'Ippon[' + str(fn) + '][0]')
+        actionLog.append(colour)
+        actionLog.append('ippon')
+    elif eval(colour + 'Ippon[fn][1]') == '':
+        exec(colour + 'Ippon[fn][1] = "' + symbol + '"')
+        window[colour + 'Ippon[' + str(fn) + '][1]'].Update(symbol)
+        actionLog.append(colour + 'Ippon[' + str(fn) + '][1]')
+        actionLog.append(colour)
+        actionLog.append('ippon')
+    points = eval(colour + 'Points') + 1
+    window[colour + 'Sum'].Update('Wins: ' + str(eval(colour + 'Wins')) + '  Points: ' + str(points))
+    return points
+
+def addHansoku(colour1,colour2,fn):
+    global actionLog
+    if eval(colour1 + 'Hansoku[fn]') == '':
+        exec(colour1 + 'Hansoku[fn] = "▲"')
+        window[colour1 + 'Hansoku[' + str(fn) + ']'].Update('▲')
+        actionLog.append(colour1 + 'Hansoku[' + str(fn) + ']')
+        actionLog.append(colour1)
+        actionLog.append('hansoku')
+        points = eval(colour2 + 'Points')
+    elif eval(colour1 + 'Hansoku[fn]') == '▲':
+        exec(colour1 + 'Hansoku[fn] = ""')
+        window[colour1 + 'Hansoku[' + str(fn) + ']'].Update('')
+        points = updateIpponColumn('H',colour2,fn)
+    return points
+
+def undoAction():
+    global actionLog
+    print('undo')
+    print(actionLog)
+    try:
+        actionType = actionLog.pop()
+        print('actionType: ' + actionType)
+    except:
+        actionType = 'Error'
+        print('actionType: ' + actionType)
+    try:
+        colour = actionLog.pop()
+        print(colour)
+    except:
+        colour = 'Error'
+        print(colour)
+    try:
+        lastAction = actionLog.pop()
+        print(lastAction)
+    except:
+        lastAction = 'Error'
+        print(lastAction)
+    if colour == 'white':
+        cIndex = 0
+    elif colour == 'red':
+        cIndex = 1
+    else:
+        cIndex = 99
+    print(cIndex)
+    
+    window[lastAction].Update('')
+    return lastAction, colour, actionType, cIndex
+    
+
+actionLog = ['started']
+
 p1r = 'Gareth'
 p1w = 'Dez'
 p2r = 'Sarah'
@@ -24,16 +118,19 @@ fs = 10
 
 fn = 0
 ip = 0
-wp = 0
-rp = 0
-ww = 0
-rw = 0
+whitePoints = 0
+redPoints = 0
+whiteWins = 0
+redWins = 0
+#results array - outer array is fights. Inner array is 'white points','red points','status of fight' (notStarted, started, finished)
+results = [[0,0,'started'],[0,0,'notStarted'],[0,0,'notStarted'],[0,0,'notStarted'],[0,0,'notStarted']]
 
 redIppon = [['',''],['',''],['',''],['',''],['','']]
 whiteIppon = [['',''],['',''],['',''],['',''],['','']]
 redHansoku = ['','','','','']
 whiteHansoku = ['','','','','']
 hikiwake = ['','','','','']
+
 
 scoreboard = {'BACKGROUND': 'white',
                 'TEXT': 'black',
@@ -194,12 +291,14 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
              ,sg.VerticalSeparator()
              ,sg.Text('5', size=(2, 1), font=('arial',fs), key='red4')]
             ,[sg.HorizontalSeparator()]
-            ,[sg.Text('Wins: ' + str(ww) + '  Points: ' + str(wp), key='wSum')
+            ,[sg.Text('Wins: ' + str(whiteWins) + '  Points: ' + str(whitePoints), key='whiteSum')
               ,sg.Push()
-              ,sg.Text('Wins: ' + str(rw) + '  Points: ' + str(rp), key='rSum')]
+              ,sg.Text('Wins: ' + str(redWins) + '  Points: ' + str(redPoints), key='redSum')]
             ,[sg.HorizontalSeparator()]
-            ,[sg.Text('Next Match:', key='nextMatch')]
+            ,[sg.Push(),sg.Text('', key='victor'),sg.Push()]
             ,[sg.Text(nextWhiteTeam, key='nextWhiteTeam')
+              ,sg.Push()
+              ,sg.Text('Next Match', key='nextMatch')
               ,sg.Push()
               ,sg.Text(nextRedTeam, background_color='red', key='nextRedTeam')
             ]
@@ -214,17 +313,13 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
               ,sg.VerticalSeparator()
               ,sg.Button('▲', button_color=('black', 'white'), key='b4')
               ,sg.VerticalSeparator()
-              ,sg.Button('Q', button_color=('black', 'white'), key='u0')
-              ,sg.VerticalSeparator()
               ,sg.Push()
-              ,sg.VerticalSeparator()
-              ,sg.Button('Q', button_color=('black', 'white'), key='u2')
               ,sg.VerticalSeparator()
               ,sg.Button('Next Fight', key='b5')
               ,sg.VerticalSeparator()
-              ,sg.Push()
+              ,sg.Button('Q', button_color=('black', 'white'), key='undo')
               ,sg.VerticalSeparator()
-              ,sg.Button('Q', button_color=('black', 'white'), key='u1')
+              ,sg.Push()
               ,sg.VerticalSeparator()
               ,sg.Button('▲', button_color=('black', 'white'), key='b6')
               ,sg.VerticalSeparator()
@@ -252,279 +347,117 @@ window.bind('<Key-o>',"b9")
 window.bind('<Key-i>',"b8")
 window.bind('<Key-u>',"b7")
 window.bind('<Key-y>',"b6")
-window.bind('<Key-a>',"u0")
-window.bind('<Key-l>',"u1")
-window.bind('<space>',"u2")
+window.bind('<Delete>',"undo")
+window.bind('<BackSpace>',"undo")
 window.bind('<Return>',"b5")
 
 #fs = round(window.size[1]/20)
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
     event, values = window.read()
+    print(actionLog)
     if event == "Configure":
-        #print('configure')
-        #print(window.size)
-        #print (window.size[1])
         fs = round(window.size[1]/16)
-        window.refresh
-        [window[f'blank{i}'].Update(font=('arial',fs)) for i in range(0,9)]
-        window['whiteName'].Update(font=('arial',fs))
-        window['redName'].Update(font=('arial',fs))
-        window['nextMatch'].Update(font=('arial',fs))
-        window['nextWhiteTeam'].Update(font=('arial',fs))
-        window['nextRedTeam'].Update(font=('arial',fs))
-        window['rSum'].Update(font=('arial',fs))
-        window['wSum'].Update(font=('arial',fs))
-        [window[f'white{i}'].Update(font=('arial',fs)) for i in range(0,5)]
-        [window[f'red{i}'].Update(font=('arial',fs)) for i in range(0,5)]
-        [window[f'whiteNames[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
-        [window[f'redNames[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
-        [window[f'whiteIppon[{i}][0]'].Update(font=('arial',fs)) for i in range(0,5)]
-        [window[f'whiteIppon[{i}][1]'].Update(font=('arial',fs)) for i in range(0,5)]
-        [window[f'whiteHansoku[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
-        [window[f'redIppon[{i}][0]'].Update(font=('arial',fs)) for i in range(0,5)]
-        [window[f'redIppon[{i}][1]'].Update(font=('arial',fs)) for i in range(0,5)]
-        [window[f'redHansoku[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
-        [window[f'hikiwake[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
-        [window[f'b{i}'].Widget.config(font=('arial',round(fs/2))) for i in range(0,11)]
-        [window[f'u{i}'].Widget.config(font=('Wingdings 3',round(fs/2))) for i in range(0,3)]
+        fontResize(fs)
     if event == 'b5':
-        if len(redIppon[fn][0]+redIppon[fn][1]) == len(whiteIppon[fn][0]+whiteIppon[fn][1]):
-            #print('draw')
+##        results[fn][0] = len(whiteIppon[fn][0]+whiteIppon[fn][1])
+##        results[fn][1] = len(redIppon[fn][0]+redIppon[fn][1])
+        print(fn)
+        results[fn][2] = 'finished'
+        print(results)
+        print(redWins)
+        print(whiteWins)
+        actionLog.append('hikiwake[' +str(fn) + ']')
+        if results[fn][1] == results[fn][0]:
             hikiwake[fn] = 'X'
             window['hikiwake[' +str(fn) + ']'].Update('X')
-        elif len(redIppon[fn][0]+redIppon[fn][1]) > len(whiteIppon[fn][0]+whiteIppon[fn][1]):
-            rw = rw + 1
-            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-        elif len(redIppon[fn][0]+redIppon[fn][1]) < len(whiteIppon[fn][0]+whiteIppon[fn][1]):
-            ww = ww + 1
-            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
+            actionLog.append('draw')
+        elif results[fn][1] > results[fn][0]:
+            redWins = redWins + 1
+            window['redSum'].Update('Wins: ' + str(redWins) + '  Points: ' + str(redPoints))
+            actionLog.append('red')
+        elif results[fn][1] < results[fn][0]:
+            whiteWins = whiteWins + 1
+            window['whiteSum'].Update('Wins: ' + str(whiteWins) + '  Points: ' + str(whitePoints))
+            actionLog.append('white')
+        actionLog.append('nextFight')
         if fn < 4:
             window['white'+str(fn)].Update(background_color='white')
             window['red'+str(fn)].Update(background_color='white')
             fn = fn + 1
             window['white'+str(fn)].Update(background_color='grey')
             window['red'+str(fn)].Update(background_color='grey')
-            #print(fn)
-    if event == 'u2':
-        if fn > 0:
-            print(fn)
+        elif fn == 4:
+            window['white'+str(fn)].Update(background_color='white')
+            window['red'+str(fn)].Update(background_color='white')
+            if redWins > whiteWins:
+                window['victor'].Update('Victor: ' + currentRedTeam)
+            elif whiteWins > redWins:
+                window['victor'].Update('Victor: ' + currentWhiteTeam)
+            elif redPoints > whiteWins:
+                window['victor'].Update('Victor: ' + currentRedTeam)
+            elif whitePoints > redPoints:
+                window['victor'].Update('Victor: ' + currentWhiteTeam)
+            else:
+                daihosen = sg.popup_yes_no(title='Daihosen?')
+                if daihosen == 'Yes':
+                    window['victor'].Update('Daihosen')
+                else:
+                    window['victor'].Update('Draw')
+            
+    if event == 'undo':
+        lastAction = undoAction()
+        if lastAction[0] != 'error':
+            exec(lastAction[0] + " = ''")
+        if lastAction[2] == 'ippon':
+            exec(lastAction[1] + 'Points = ' + lastAction[1] + 'Points -1')
+            window[lastAction[1] + 'Sum'].Update('Wins: ' + str(eval(lastAction[1] + 'Wins')) + '  Points: ' + str(eval(lastAction[1] + 'Points')))
+            results[fn][lastAction[3]] = results[fn][lastAction[3]] - 1
+        if lastAction[2] == 'nextFight':
+            results[fn] = 0, 0, 'notStarted'
+            if lastAction[1] != 'draw':
+                exec(lastAction[1] + 'Wins = ' + lastAction[1] + 'Wins -1')
+                window[lastAction[1] + 'Sum'].Update('Wins: ' + str(eval(lastAction[1] + 'Wins')) + '  Points: ' + str(eval(lastAction[1] + 'Points')))
             window['white'+str(fn)].Update(background_color='white')
             window['red'+str(fn)].Update(background_color='white')
             fn = fn - 1
             window['white'+str(fn)].Update(background_color='grey')
             window['red'+str(fn)].Update(background_color='grey')
-            hikiwake[fn] = ''
-            window['hikiwake[' +str(fn) + ']'].Update('')
-            print(fn)
     if event == 'b10':
-        #print('Men')
-        #print('fn:',fn)
-        if redIppon[fn][0] == '':
-            redIppon[fn][0] = 'M'
-            window['redIppon[' + str(fn) + '][0]'].Update('M')
-            rp = rp + 1
-            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-            print(rp)
-        elif redIppon[fn][1] == '':
-            redIppon[fn][1] = 'M'
-            window['redIppon[' + str(fn) + '][1]'].Update('M')
-            rp = rp + 1
-            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-            print(rp)
-        else:
-            print('error')
+        redPoints = updateIpponColumn('M','red',fn)
+        results[fn][1] = results[fn][1] + 1
+        print (redPoints)
+        print(results[fn])
     if event == 'b9':
-        #print('Kote')
-        #print('fn:',fn)
-        if redIppon[fn][0] == '':
-            redIppon[fn][0] = 'K'
-            window['redIppon[' + str(fn) + '][0]'].Update('K')
-            rp = rp + 1
-            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-            print(rp)
-        elif redIppon[fn][1] =='':
-            redIppon[fn][1] = 'K'
-            window['redIppon[' + str(fn) + '][1]'].Update('K')
-            rp = rp + 1
-            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-            print(rp)
-        else:
-            print('error')
+        redPoints = updateIpponColumn('K','red',fn)
+        results[fn][1] = results[fn][1] + 1
     if event == 'b8':
-        if redIppon[fn][0] == '':
-            redIppon[fn][0] = 'D'
-            window['redIppon[' + str(fn) + '][0]'].Update('D')
-            rp = rp + 1
-            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-            print(rp)
-        elif redIppon[fn][1] == '':
-            redIppon[fn][1] = 'D'
-            window['redIppon[' + str(fn) + '][1]'].Update('D')
-            rp = rp + 1
-            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-            print(rp)
-        else:
-            print('error')
+        redPoints = updateIpponColumn('D','red',fn)
+        results[fn][1] = results[fn][1] + 1
     if event == 'b7':
-        if redIppon[fn][0] == '':
-            redIppon[fn][0] = 'T'
-            window['redIppon[' + str(fn) + '][0]'].Update('T')
-            rp = rp + 1
-            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-            print(rp)
-        elif redIppon[fn][1] == '':
-            redIppon[fn][1] = 'T'
-            window['redIppon[' + str(fn) + '][1]'].Update('T')
-            rp = rp + 1
-            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-            print(rp)
-        else:
-            print('error')
-
+        redPoints = updateIpponColumn('T','red',fn)
+        results[fn][1] = results[fn][1] + 1
     if event == 'b6':
-        #print('Hansoku:',redHansoku[fn])
-        if redHansoku[fn] == '':
-            redHansoku[fn] = '▲'
-            window['redHansoku[' + str(fn) + ']'].Update('▲')
-        else:
-            redHansoku[fn] = ''
-            window['redHansoku[' + str(fn) + ']'].Update('')
-            if whiteIppon[fn][0] == '':
-                whiteIppon[fn][0] = 'H'
-                window['whiteIppon[' + str(fn) + '][0]'].Update('H')
-                wp = wp + 1
-                window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-                print(wp)
-            elif whiteIppon[fn][1] == '':
-                whiteIppon[fn][1] = 'H'
-                window['whiteIppon[' + str(fn) + '][1]'].Update('H')
-                wp = wp + 1
-                window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-                print(wp)
-            else:
-                print('error')
+        whitePoints = addHansoku('red','white',fn)
+
     if event == 'b0':
-        #print('Men')
-        #print('fn:',fn)
-        if whiteIppon[fn][0] == '':
-            whiteIppon[fn][0] = 'M'
-            window['whiteIppon[' + str(fn) + '][0]'].Update('M')
-            wp = wp + 1
-            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-            print(wp)
-        elif whiteIppon[fn][1] == '':
-            whiteIppon[fn][1] = 'M'
-            window['whiteIppon[' + str(fn) + '][1]'].Update('M')
-            wp = wp + 1
-            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-            print(wp)
-        else:
-            print('error')
+        whitePoints = updateIpponColumn('M','white',fn)
+        results[fn][0] = results[fn][0] + 1
+        print (whitePoints)
+        print(results[fn])
     if event == 'b1':
-        #print('Kote')
-        #print('fn:',fn)
-        if whiteIppon[fn][0] == '':
-            whiteIppon[fn][0] = 'K'
-            window['whiteIppon[' + str(fn) + '][0]'].Update('K')
-            wp = wp + 1
-            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-            print(wp)
-        elif whiteIppon[fn][1] == '':
-            whiteIppon[fn][1] = 'K'
-            window['whiteIppon[' + str(fn) + '][1]'].Update('K')
-            wp = wp + 1
-            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-            print(wp)
-        else:
-            print('error')
+        whitePoints = updateIpponColumn('K','white',fn)
+        results[fn][0] = results[fn][0] + 1
     if event == 'b2':
-        #print('Doh')
-        #print('fn:',fn)
-        if whiteIppon[fn][0] == '':
-            whiteIppon[fn][0] = 'D'
-            window['whiteIppon[' + str(fn) + '][0]'].Update('D')
-            wp = wp + 1
-            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-            print(wp)
-        elif whiteIppon[fn][1] == '':
-            whiteIppon[fn][1] = 'D'
-            window['whiteIppon[' + str(fn) + '][1]'].Update('D')
-            wp = wp + 1
-            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-            print(wp)
-        else:
-            print('error')
+        whitePoints = updateIpponColumn('D','white',fn)
+        results[fn][0] = results[fn][0] + 1
     if event == 'b3':
-        if whiteIppon[fn][0] == '':
-            whiteIppon[fn][0] = 'T'
-            window['whiteIppon[' + str(fn) + '][0]'].Update('T')
-            wp = wp + 1
-            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-            print(wp)
-        elif whiteIppon[fn][1] == '':
-            whiteIppon[fn][1] = 'T'
-            window['whiteIppon[' + str(fn) + '][1]'].Update('T')
-            wp = wp + 1
-            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-            print(wp)
-        else:
-            print('error')
-
+        whitePoints = updateIpponColumn('T','white',fn)
+        results[fn][0] = results[fn][0] + 1
     if event == 'b4':
-        if whiteHansoku[fn] == '':
-            whiteHansoku[fn] = '▲'
-            window['whiteHansoku[' + str(fn) + ']'].Update('▲')
-        elif whiteHansoku[fn] == '▲':
-            whiteHansoku[fn] = ''
-            window['whiteHansoku[' + str(fn) + ']'].Update('')
-            if redIppon[fn][0] == '':
-                redIppon[fn][0] = 'H'
-                window['redIppon[' + str(fn) + '][0]'].Update('H')
-                rp = rp + 1
-                window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-                print(rp)
-            elif redIppon[fn][1] == '':
-                redIppon[fn][1] = 'H'
-                window['redIppon[' + str(fn) + '][1]'].Update('H')
-                rp = rp + 1
-                window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-                print(rp)
-            else:
-                print('error')
+        redPoints = addHansoku('white','red',fn)
 
-    if event == 'u0':
-        if whiteIppon[fn][1] != '':
-            whiteIppon[fn][1] = ''
-            window['whiteIppon[' + str(fn) + '][1]'].Update('')
-            wp = wp - 1
-            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-            print(wp)
-        elif whiteIppon[fn][0] != '':
-            whiteIppon[fn][0] = ''
-            window['whiteIppon[' + str(fn) + '][0]'].Update('')
-            wp = wp - 1
-            window['wSum'].Update('Wins: ' + str(ww) + '  Points: ' + str(wp))
-            print(wp)
-        else:
-            print('error')
-            
 
-    if event == 'u1':
-        if redIppon[fn][1] != '':
-            redIppon[fn][1] = ''
-            window['redIppon[' + str(fn) + '][1]'].Update('')
-            rp = rp - 1
-            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-            print(wp)
-        elif redIppon[fn][0] != '':
-            redIppon[fn][0] = ''
-            window['redIppon[' + str(fn) + '][0]'].Update('')
-            rp = rp - 1
-            window['rSum'].Update('Wins: ' + str(rw) + '  Points: ' + str(rp))
-            print(wp)
-        else:
-            print('error')
             
     if event == sg.WIN_CLOSED or event == 'Cancel': # if user closes window or clicks cancel
         break

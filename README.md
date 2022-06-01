@@ -37,3 +37,18 @@ Return= Next fight
 \
 BackSpace or Delete = Undo Last Action
 ## Work List
+I'll try to keep this bit up to date with stuff I'm working on.
+
+Now
+* Team Name entry and possibly import from text file
+* Cleaning up a number of redundant variables
+* Better selection of names for daihosen fights
+* Reinitializing the board
+
+Bugs!
+* Cannot Put a score in daihosen without triggering an error that crashes the exe version.
+* Undo on blank board (i.e. no ippon etc) errors.
+* Lot's more
+
+Future
+* Not sure yet!

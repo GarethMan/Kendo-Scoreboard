@@ -10,6 +10,7 @@ The philosphy should be to produce the electronic equivalent to a physical score
 It should end up not requiring networking as running a network in a sportshall can be challenging and even if networking capabilities are added they should not be neccesary it order to use the software.
 ## Prerequisites
 So far it uses only Python 3.10 and pysimplegui.
+
 I've provided an exe for non-coder windows users to check out. This may trigger you antivirus (it triggers mine). Obviously, procede at your own caution! I can't be responsible for any harm that may occur running this very very alpha stage program on your system.
 ## Keyboard Shortcuts
 q= White Men

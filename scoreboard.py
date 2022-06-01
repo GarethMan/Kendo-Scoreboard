@@ -389,7 +389,7 @@ while True:
     event, values = window.read()
     print(actionLog)
     if event == "Configure":
-        fs = round(window.size[1]/16)
+        fs = round(window.size[1]/17)
         fontResize(fs)
     if event == 'b5':
 ##        results[fn][0] = len(whiteIppon[fn][0]+whiteIppon[fn][1])

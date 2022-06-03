@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+import ast
 
 
 def fontResize(fs):
@@ -11,46 +12,40 @@ def fontResize(fs):
     window['redSum'].Update(font=('arial',fs))
     window['whiteSum'].Update(font=('arial',fs))
     window['victor'].Update(font=('arial',fs))
-    [window[f'white{i}'].Update(font=('arial',fs)) for i in range(0,5)]
-    [window[f'red{i}'].Update(font=('arial',fs)) for i in range(0,5)]
-    [window[f'whiteNames[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
-    [window[f'redNames[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
-    [window[f'whiteIppon[{i}][0]'].Update(font=('arial',fs)) for i in range(0,5)]
-    [window[f'whiteIppon[{i}][1]'].Update(font=('arial',fs)) for i in range(0,5)]
-    [window[f'whiteHansoku[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
-    [window[f'redIppon[{i}][0]'].Update(font=('arial',fs)) for i in range(0,5)]
-    [window[f'redIppon[{i}][1]'].Update(font=('arial',fs)) for i in range(0,5)]
-    [window[f'redHansoku[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
-    [window[f'hikiwake[{i}]'].Update(font=('arial',fs)) for i in range(0,5)]
+    [window[f'white{i}'].Update(font=('arial',fs)) for i in range(0,6)]
+    [window[f'red{i}'].Update(font=('arial',fs)) for i in range(0,6)]
+    [window[f'whiteNames[{i}]'].Update(font=('arial',fs)) for i in range(0,6)]
+    [window[f'redNames[{i}]'].Update(font=('arial',fs)) for i in range(0,6)]
+    [window[f'whiteIppon[{i}][0]'].Update(font=('arial',fs)) for i in range(0,6)]
+    [window[f'whiteIppon[{i}][1]'].Update(font=('arial',fs)) for i in range(0,6)]
+    [window[f'whiteHansoku[{i}]'].Update(font=('arial',fs)) for i in range(0,6)]
+    [window[f'redIppon[{i}][0]'].Update(font=('arial',fs)) for i in range(0,6)]
+    [window[f'redIppon[{i}][1]'].Update(font=('arial',fs)) for i in range(0,6)]
+    [window[f'redHansoku[{i}]'].Update(font=('arial',fs)) for i in range(0,6)]
+    [window[f'hikiwake[{i}]'].Update(font=('arial',fs)) for i in range(0,6)]
     [window[f'b{i}'].Widget.config(font=('arial',round(fs/2))) for i in range(0,11)]
     window['undo'].Widget.config(font=('Wingdings 3',round(fs/2)))
-    [window[f'd{i}'].Update(font=('arial',fs)) for i in range(0,11)]
     
-def updateIpponColumn(symbol,colour,fn):
+def updateIpponColumn(symbol,colour,fn,colourIndex):
     global actionLog
-    if fn == 6:
-        if colour == 'white':
-            window['d2'].Update(symbol)
-        else:
-            window['d8'].Update(symbol)
-    else:
-        if eval(colour + 'Ippon[fn][0]') == '':
-            exec(colour + 'Ippon[fn][0] = "' + symbol + '"')
-            window[colour + 'Ippon[' + str(fn) + '][0]'].Update(symbol)
-            actionLog.append(colour + 'Ippon[' + str(fn) + '][0]')
-            actionLog.append(colour)
-            actionLog.append('ippon')
-        elif eval(colour + 'Ippon[fn][1]') == '':
-            exec(colour + 'Ippon[fn][1] = "' + symbol + '"')
-            window[colour + 'Ippon[' + str(fn) + '][1]'].Update(symbol)
-            actionLog.append(colour + 'Ippon[' + str(fn) + '][1]')
-            actionLog.append(colour)
-            actionLog.append('ippon')
+    if eval(colour + 'Ippon[fn][0]') == '':
+        exec(colour + 'Ippon[fn][0] = "' + symbol + '"')
+        window[colour + 'Ippon[' + str(fn) + '][0]'].Update(symbol)
+        actionLog.append(colour + 'Ippon[' + str(fn) + '][0]')
+        actionLog.append(colour)
+        actionLog.append('ippon')
+    elif eval(colour + 'Ippon[fn][1]') == '':
+        exec(colour + 'Ippon[fn][1] = "' + symbol + '"')
+        window[colour + 'Ippon[' + str(fn) + '][1]'].Update(symbol)
+        actionLog.append(colour + 'Ippon[' + str(fn) + '][1]')
+        actionLog.append(colour)
+        actionLog.append('ippon')
     points = eval(colour + 'Points') + 1
+    results[fn][colourIndex] = results[fn][colourIndex] + 1
     window[colour + 'Sum'].Update('Wins: ' + str(eval(colour + 'Wins')) + '  Points: ' + str(points))
     return points
 
-def addHansoku(colour1,colour2,fn):
+def addHansoku(colour1,colour2,fn,colourIndex):
     global actionLog
     if eval(colour1 + 'Hansoku[fn]') == '':
         exec(colour1 + 'Hansoku[fn] = "▲"')
@@ -62,7 +57,7 @@ def addHansoku(colour1,colour2,fn):
     elif eval(colour1 + 'Hansoku[fn]') == '▲':
         exec(colour1 + 'Hansoku[fn] = ""')
         window[colour1 + 'Hansoku[' + str(fn) + ']'].Update('')
-        points = updateIpponColumn('H',colour2,fn)
+        points = updateIpponColumn('H',colour2,fn,colourIndex)
     return points
 
 def undoAction():
@@ -97,48 +92,78 @@ def undoAction():
     
     window[lastAction].Update('')
     return lastAction, colour, actionType, cIndex
+
+def selectPlayer(text, data):
+
+    layout = [
+        [sg.Text(text)],
+        [sg.Listbox(data, size=(20,5), key='SELECTED')],
+        [sg.Button('OK')],
+    ]
     
+    window = sg.Window('POPUP', layout).Finalize()
+    
+    while True:
+        event, values = window.read()
 
-actionLog = ['started']
+        if event == sg.WINDOW_CLOSED:
+            break
+        elif event == 'OK':
+            break
+        else:
+            print('OVER')
 
-p1r = 'Gareth'
-p1w = 'Dez'
-p2r = 'Sarah'
-p2w = 'Dave'
-p3r = 'Mat'
-p3w = 'Baz'
-p4r = 'Ru'
-p4w = 'Daniel'
-p5r = 'AN Other'
-p5w = 'Auther'
+    window.close()
 
-nl = max(['name',p1w,p1r,p2w,p2r,p3r,p3w,p4r,p4w,p5r,p5w], key=len)
-redNames = [p1r,p2r,p3r,p4r,p5r]
-whiteNames = [p1w,p2w,p3w,p4w,p5w]
+    print('[GUI_POPUP] event:', event)
+    print('[GUI_POPUP] values:', values)
 
-currentWhiteTeam = 'Team 1'
-nextWhiteTeam = 'Team 3'
-currentRedTeam = 'Team 2'
-nextRedTeam = 'Team 4'
+    if values and values['SELECTED']:
+        return values['SELECTED']    
 
-fs = 10
+def inputTeam(colour, nl, playersVisible):
+    layout = [
+        [sg.Text('Input ' + colour + ' team'), sg.Push(), sg.FileBrowse('Import', target='file', key='import', file_types=(('Text Files', '*.txt'), )),sg.Input(key='file', enable_events=True, visible=False)]
+        ,[sg.Text('')]
+        ,[sg.Push(),sg.Text('Team Name'), sg.Input('', size=(20, 1), key='teamName')]
+        ,[sg.Push(),sg.Text('Player 1', visible=playersVisible), sg.Input('', size=(20, 1), key='p1', visible=playersVisible)]
+        ,[sg.Push(),sg.Text('2', visible=playersVisible), sg.Input('', size=(20, 1), key='p2', visible=playersVisible)]
+        ,[sg.Push(),sg.Text('3', visible=playersVisible), sg.Input('', size=(20, 1), key='p3', visible=playersVisible)]
+        ,[sg.Push(),sg.Text('4', visible=playersVisible), sg.Input('', size=(20, 1), key='p4', visible=playersVisible)]
+        ,[sg.Push(),sg.Text('5', visible=playersVisible), sg.Input('', size=(20, 1), key='p5', visible=playersVisible)]
+        ,[sg.Button('OK')]
+        ]
+    window = sg.Window('White Team', layout).Finalize()
+    while True:
+        event, values = window.read()
+        print(event)
+        if event == sg.WINDOW_CLOSED:
+            break
+        elif event == 'OK':
+            teamName = values['teamName'][:nl]
+            players = [values['p1'][:nl],values['p2'][:nl],values['p3'][:nl],values['p4'][:nl],values['p5'][:nl]]
+            window.close()
+            return teamName, players
+            break
+        elif event == 'file':
+            with open(values['file'], 'r') as file:
+                data = file.read().rstrip()
+                data = ast.literal_eval(data)
+                teamName = data[0]
+                players = data[1]
+                print(teamName)
+                print(players)
+                window['teamName'].Update(teamName)
+                window['p1'].Update(players[0])
+                window['p2'].Update(players[1])
+                window['p3'].Update(players[2])
+                window['p4'].Update(players[3])
+                window['p5'].Update(players[4])
+        else:
+            print('OVER')
+    window.close()
 
-fn = 0
-ip = 0
-whitePoints = 0
-redPoints = 0
-whiteWins = 0
-redWins = 0
-#results array - outer array is fights. Inner array is 'white points','red points','status of fight' (notStarted, started, finished)
-results = [[0,0,'started'],[0,0,'notStarted'],[0,0,'notStarted'],[0,0,'notStarted'],[0,0,'notStarted']]
-
-redIppon = [['',''],['',''],['',''],['',''],['','']]
-whiteIppon = [['',''],['',''],['',''],['',''],['','']]
-redHansoku = ['','','','','']
-whiteHansoku = ['','','','','']
-hikiwake = ['','','','','']
-
-
+#look and feel
 scoreboard = {'BACKGROUND': 'white',
                 'TEXT': 'black',
                 'INPUT': 'white',
@@ -146,17 +171,63 @@ scoreboard = {'BACKGROUND': 'white',
                 'SCROLL': '#c7e78b',
                 'BUTTON': ('black', 'white'),
                 'PROGRESS': ('#01826B', '#D0D0D0'),
-                'BORDER': 0,
+                'BORDER': 1,
                 'SLIDER_DEPTH': 0,
                 'PROGRESS_DEPTH': 0}
 sg.theme_add_new('scoreboard', scoreboard)
 sg.theme('scoreboard')
-sg.set_options(element_padding=(0,0))     
-def border(elem):
-    return sg.Frame('', [[elem]])
+sg.set_options(element_padding=(0,0))
+
+
+#Initialize a list that tracks actions (e.g awarding a point). Used for the undo action.   
+actionLog = ['started']
+
+#Set max character width of the names column
+#nl = len(max(['name'] + whiteNames + redNames + [currentWhiteTeam] + [currentRedTeam], key=len))
+nl = 11
+#initial font size variable
+fs = 10
+
+#Team input
+whiteTeam = inputTeam('white', nl, True)
+redTeam = inputTeam('red', nl, True)
+
+#get the player names
+whiteNames = whiteTeam[1]
+redNames = redTeam[1]
+
+#get the team names
+currentWhiteTeam = whiteTeam[0]
+nextWhiteTeam =  inputTeam('next white', nl, False)[0]
+currentRedTeam = redTeam[0]
+nextRedTeam = inputTeam('next red', nl, False)[0]
+
+#Initialize variables for tracking the match
+#fight number
+fn = 0
+#ip = 0
+#total number of  team ippon
+whitePoints = 0
+redPoints = 0
+#number of fights won
+whiteWins = 0
+redWins = 0
+
+#results array - outer array is fights. Inner array is 'white points','red points','status of fight' (notStarted, started, finished)
+results = [[0,0,'started'],[0,0,'notStarted'],[0,0,'notStarted'],[0,0,'notStarted'],[0,0,'notStarted'],[0,0,'notStarted']]
+
+#string values of points, penalties and draws in lists for each fight.
+redIppon = [['',''],['',''],['',''],['',''],['',''],['','']]
+whiteIppon = [['',''],['',''],['',''],['',''],['',''],['','']]
+redHansoku = ['','','','','','']
+whiteHansoku = ['','','','','','']
+hikiwake = ['','','','','','']
+
+
+#board layout
 layout = [  [sg.Text('', size=(2, 1), key='blank0')
              ,sg.VerticalSeparator()
-             ,sg.Text(currentWhiteTeam, size=(len(nl), 1), key='whiteName')
+             ,sg.Text(currentWhiteTeam, size=(nl, 1), key='whiteName')
              ,sg.Push()
              ,sg.VerticalSeparator()
              ,sg.Text('', size=(2, 1), key='blank1')
@@ -174,13 +245,13 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
              ,sg.Text('', size=(2, 1), key='blank7')
              ,sg.VerticalSeparator()
              ,sg.Push()
-             ,sg.Text(currentRedTeam, size=(len(nl), 1),border_width = 0, background_color='red', key='redName')
+             ,sg.Text(currentRedTeam, size=(nl, 1),border_width = 0, justification = 'right', background_color='red', key='redName')
              ,sg.VerticalSeparator()
              ,sg.Text('', size=(2, 1), key='blank8')]
             ,[sg.HorizontalSeparator()]
             ,[sg.Text('1', size=(2, 1), key='white0', background_color='grey')
              ,sg.VerticalSeparator()
-             ,sg.Text(whiteNames[0], size=(len(nl), 1), key='whiteNames[0]')
+             ,sg.Text(whiteNames[0], size=(nl, 1), key='whiteNames[0]')
              ,sg.Push()
              ,sg.VerticalSeparator()
              ,sg.Text(whiteIppon[0][0], size=(2, 1), key='whiteIppon[0][0]')
@@ -198,13 +269,13 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
              ,sg.Text(redIppon[0][0], size=(2, 1), key='redIppon[0][0]')
              ,sg.VerticalSeparator()
              ,sg.Push()
-             ,sg.Text(redNames[0], size=(len(nl), 1), key='redNames[0]')
+             ,sg.Text(redNames[0], size=(nl, 1), justification = 'right', key='redNames[0]')
              ,sg.VerticalSeparator()
-             ,sg.Text('1', size=(2, 1), key='red0', background_color='grey')]
+             ,sg.Text('1', size=(2, 1), key='red0', justification = 'right', background_color='grey')]
             ,[sg.HorizontalSeparator()]
             ,[sg.Text('2', size=(2, 1), key='white1')
              ,sg.VerticalSeparator()
-             ,sg.Text(whiteNames[1], size=(len(nl), 1), key='whiteNames[1]')
+             ,sg.Text(whiteNames[1], size=(nl, 1), key='whiteNames[1]')
              ,sg.Push()
              ,sg.VerticalSeparator()
              ,sg.Text(whiteIppon[1][0], size=(2, 1), key='whiteIppon[1][0]')
@@ -222,13 +293,13 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
              ,sg.Text(redIppon[1][0], size=(2, 1), key='redIppon[1][0]')
              ,sg.VerticalSeparator()
              ,sg.Push()
-             ,sg.Text(redNames[1], size=(len(nl), 1), key='redNames[1]')
+             ,sg.Text(redNames[1], size=(nl, 1), justification = 'right', key='redNames[1]')
              ,sg.VerticalSeparator()
-             ,sg.Text('2', size=(2, 1), key='red1')]
+             ,sg.Text('2', size=(2, 1), justification = 'right', key='red1')]
             ,[sg.HorizontalSeparator()]
             ,[sg.Text('3', size=(2, 1), key='white2')
              ,sg.VerticalSeparator()
-             ,sg.Text(whiteNames[2], size=(len(nl), 1), key='whiteNames[2]')
+             ,sg.Text(whiteNames[2], size=(nl, 1), key='whiteNames[2]')
              ,sg.Push()
              ,sg.VerticalSeparator()
              ,sg.Text(whiteIppon[2][0], size=(2, 1), key='whiteIppon[2][0]')
@@ -246,13 +317,13 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
              ,sg.Text(redIppon[2][0], size=(2, 1), key='redIppon[2][0]')
              ,sg.VerticalSeparator()
              ,sg.Push()
-             ,sg.Text(redNames[2], size=(len(nl), 1), key='redNames[2]')
+             ,sg.Text(redNames[2], size=(nl, 1), justification = 'right', key='redNames[2]')
              ,sg.VerticalSeparator()
-             ,sg.Text('3', size=(2, 1), key='red2')]
+             ,sg.Text('3', size=(2, 1), justification = 'right', key='red2')]
             ,[sg.HorizontalSeparator()]
             ,[sg.Text('4', size=(2, 1), key='white3')
              ,sg.VerticalSeparator()
-             ,sg.Text(whiteNames[3], size=(len(nl), 1), key='whiteNames[3]')
+             ,sg.Text(whiteNames[3], size=(nl, 1), key='whiteNames[3]')
              ,sg.Push()
              ,sg.VerticalSeparator()
              ,sg.Text(whiteIppon[3][0], size=(2, 1), key='whiteIppon[3][0]')
@@ -270,13 +341,13 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
              ,sg.Text(redIppon[3][0], size=(2, 1), key='redIppon[3][0]')
              ,sg.VerticalSeparator()
              ,sg.Push()
-             ,sg.Text(redNames[3], size=(len(nl), 1), key='redNames[3]')
+             ,sg.Text(redNames[3], size=(nl, 1), justification = 'right', key='redNames[3]')
              ,sg.VerticalSeparator()
-             ,sg.Text('4', size=(2, 1), key='red3')]
+             ,sg.Text('4', size=(2, 1), justification = 'right', key='red3')]
             ,[sg.HorizontalSeparator()]
             ,[sg.Text('5', size=(2, 1), key='white4')
              ,sg.VerticalSeparator()
-             ,sg.Text(whiteNames[4], size=(len(nl), 1), key='whiteNames[4]')
+             ,sg.Text(whiteNames[4], size=(nl, 1), key='whiteNames[4]')
              ,sg.Push()
              ,sg.VerticalSeparator()
              ,sg.Text(whiteIppon[4][0], size=(2, 1), key='whiteIppon[4][0]')
@@ -294,33 +365,33 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
              ,sg.Text(redIppon[4][0], size=(2, 1), key='redIppon[4][0]')
              ,sg.VerticalSeparator()
              ,sg.Push()
-             ,sg.Text(redNames[4], size=(len(nl), 1), key='redNames[4]')
+             ,sg.Text(redNames[4], size=(nl, 1), justification = 'right', key='redNames[4]')
              ,sg.VerticalSeparator()
-             ,sg.Text('5', size=(2, 1), font=('arial',fs), key='red4')]
+             ,sg.Text('5', size=(2, 1), justification = 'right', key='red4')]
             ,[sg.HorizontalSeparator()]
-            ,[sg.Text('', size=(2, 1), key='d0')
+            ,[sg.Text('', size=(2, 1), key='white5')
              ,sg.VerticalSeparator()
-             ,sg.Text('', size=(len(nl), 1), key='d1')
+             ,sg.Text('', size=(nl, 1), key='whiteNames[5]')
              ,sg.Push()
              ,sg.VerticalSeparator()
-             ,sg.Text('', size=(2, 1), key='d2')
+             ,sg.Text('', size=(2, 1), key='whiteIppon[5][0]')
              ,sg.VerticalSeparator()
-             ,sg.Text('', size=(2, 1), key='d3')
+             ,sg.Text('', size=(2, 1), key='whiteIppon[5][1]')
              ,sg.VerticalSeparator()
-             ,sg.Text('', size=(2, 1), key='d4')
+             ,sg.Text('', size=(2, 1), key='whiteHansoku[5]')
              ,sg.VerticalSeparator()
-             ,sg.Text('', size=(2, 1), key='d5')
+             ,sg.Text('', size=(2, 1), key='hikiwake[5]')
              ,sg.VerticalSeparator()
-             ,sg.Text('', size=(2, 1), key='d6')
+             ,sg.Text('', size=(2, 1), key='redHansoku[5]')
              ,sg.VerticalSeparator()
-             ,sg.Text('', size=(2, 1), key='d7')
+             ,sg.Text('', size=(2, 1), key='redIppon[5][1]')
              ,sg.VerticalSeparator()
-             ,sg.Text('', size=(2, 1), key='d8')
+             ,sg.Text('', size=(2, 1), key='redIppon[5][0]')
              ,sg.VerticalSeparator()
              ,sg.Push()
-             ,sg.Text('', size=(len(nl), 1), key='d9')
+             ,sg.Text('', size=(nl, 1), justification = 'right', key='redNames[5]')
              ,sg.VerticalSeparator()
-             ,sg.Text('', size=(2, 1), font=('arial',fs), key='d10')]
+             ,sg.Text('', size=(2, 1), justification = 'right', key='red5')]
             ,[sg.HorizontalSeparator()]
             ,[sg.Text('Wins: ' + str(whiteWins) + '  Points: ' + str(whitePoints), key='whiteSum')
               ,sg.Push()
@@ -331,7 +402,7 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
               ,sg.Push()
               ,sg.Text('Next Match', key='nextMatch')
               ,sg.Push()
-              ,sg.Text(nextRedTeam, background_color='red', key='nextRedTeam')
+              ,sg.Text(nextRedTeam, background_color='red', justification = 'right', key='nextRedTeam')
             ]
             ,[sg.HorizontalSeparator()]
             ,[sg.Button('M', button_color=('black', 'white'), key='b0')
@@ -366,7 +437,8 @@ layout = [  [sg.Text('', size=(2, 1), key='blank0')
             ]
 
 # Create the Window
-window = sg.Window('Window Title', layout, resizable=True, finalize=True)
+window = sg.Window('Scoreboard', layout, resizable=True, finalize=True)
+window.Maximize()
 window.bind('<Configure>', "Configure")
 window.bind('<Key-q>',"b0")
 window.bind('<Key-w>',"b1")
@@ -435,17 +507,24 @@ while True:
             else:
                 daihosen = sg.popup_yes_no('Daihosen?',title='Daihosen?',modal=True,)
                 if daihosen == 'Yes':
-                    fn = 6
+                    fn = 5
                     window['victor'].Update('Daihosen')
-                    whiteD = sg.popup_get_text('White Player',background_color='grey')
-                    redD = sg.popup_get_text('Red Player',background_color='grey')
-                    window['d0'].Update('D')
-                    window['d1'].Update(whiteD)
-                    window['d9'].Update(redD)
-                    window['d10'].Update('D')
+                    whiteD = selectPlayer('Select ' + currentWhiteTeam + ' representative', whiteNames)[0]
+                    redD = selectPlayer('Select ' + currentRedTeam + ' representative', redNames)[0]
+                    window['white5'].Update('D')
+                    window['whiteNames[5]'].Update(whiteD)
+                    window['redNames[5]'].Update(redD)
+                    window['red5'].Update('D')
                     
                 else:
                     window['victor'].Update('Draw')
+        elif fn == 5:
+            if redWins > whiteWins:
+                window['victor'].Update('Victor: ' + currentRedTeam)
+            elif whiteWins > redWins:
+                window['victor'].Update('Victor: ' + currentWhiteTeam)
+            
+                
             
     if event == 'undo':
         lastAction = undoAction()
@@ -471,33 +550,33 @@ while True:
         print (redPoints)
         print(results[fn])
     if event == 'b9':
-        redPoints = updateIpponColumn('K','red',fn)
-        results[fn][1] = results[fn][1] + 1
+        redPoints = updateIpponColumn('K','red',fn,1)
+        #results[fn][1] = results[fn][1] + 1
     if event == 'b8':
-        redPoints = updateIpponColumn('D','red',fn)
-        results[fn][1] = results[fn][1] + 1
+        redPoints = updateIpponColumn('D','red',fn,1)
+        #results[fn][1] = results[fn][1] + 1
     if event == 'b7':
-        redPoints = updateIpponColumn('T','red',fn)
-        results[fn][1] = results[fn][1] + 1
+        redPoints = updateIpponColumn('T','red',fn,1)
+        #results[fn][1] = results[fn][1] + 1
     if event == 'b6':
-        whitePoints = addHansoku('red','white',fn)
+        whitePoints = addHansoku('red','white',fn,0)
 
     if event == 'b0':
-        whitePoints = updateIpponColumn('M','white',fn)
-        results[fn][0] = results[fn][0] + 1
-        print (whitePoints)
-        print(results[fn])
+        whitePoints = updateIpponColumn('M','white',fn,0)
+        #results[fn][0] = results[fn][0] + 1
+        #print (whitePoints)
+        #print(results[fn])
     if event == 'b1':
-        whitePoints = updateIpponColumn('K','white',fn)
-        results[fn][0] = results[fn][0] + 1
+        whitePoints = updateIpponColumn('K','white',fn,0)
+        #results[fn][0] = results[fn][0] + 1
     if event == 'b2':
-        whitePoints = updateIpponColumn('D','white',fn)
-        results[fn][0] = results[fn][0] + 1
+        whitePoints = updateIpponColumn('D','white',fn,0)
+        #results[fn][0] = results[fn][0] + 1
     if event == 'b3':
-        whitePoints = updateIpponColumn('T','white',fn)
-        results[fn][0] = results[fn][0] + 1
+        whitePoints = updateIpponColumn('T','white',fn,0)
+        #results[fn][0] = results[fn][0] + 1
     if event == 'b4':
-        redPoints = addHansoku('white','red',fn)
+        redPoints = addHansoku('white','red',fn,1)
 
 
             

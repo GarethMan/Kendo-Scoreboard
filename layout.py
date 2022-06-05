@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIppon,whiteWins,redWins,currentWhiteTeam,currentRedTeam,nextWhiteTeam,nextRedTeam,totalPoints,nl):
+def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIppon,wins,currentWhiteTeam,currentRedTeam,nextWhiteTeam,nextRedTeam,totalPoints,nl):
     layout = [  [sg.Text('', size=(2, 1), key='blank0')
                      ,sg.VerticalSeparator()
                      ,sg.Text(currentWhiteTeam, size=(nl, 1), key='whiteName')
@@ -168,9 +168,9 @@ def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIp
                      ,sg.VerticalSeparator()
                      ,sg.Text('', size=(2, 1), justification = 'right', key='red5')]
                     ,[sg.HorizontalSeparator()]
-                    ,[sg.Text('Wins: ' + str(whiteWins) + '  Points: ' + str(totalPoints[0]), key='whiteSum')
+                    ,[sg.Text('Wins: ' + str(wins[0]) + '  Points: ' + str(totalPoints[0]), key='whiteSum')
                       ,sg.Push()
-                      ,sg.Text('Wins: ' + str(redWins) + '  Points: ' + str(totalPoints[1]), key='redSum')]
+                      ,sg.Text('Wins: ' + str(wins[1]) + '  Points: ' + str(totalPoints[1]), key='redSum')]
                     ,[sg.HorizontalSeparator()]
                     ,[sg.Push(),sg.Text('', key='victor'),sg.Push()]
                     ,[sg.Text(nextWhiteTeam, key='nextWhiteTeam')

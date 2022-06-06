@@ -115,21 +115,17 @@ def MAIN():
     nextRedTeam = inputTeam('next red', nl, False)[0]
 
     #Initialize variables for tracking the match
-    #fight number
+    #fight number. Track what fight the match is on starting at 0 (1st fight) up to 5 (daihosen)
     fn = 0
-    #total number of  team ippon
-    whitePoints = 0
-    redPoints = 0
-    #number of fights won
-    whiteWins = 0
-    redWins = 0
-    totalPoints = [0,0]
+    #Total number of wins the team has scored [white,red]. Used for determining the overall winner of a match
     wins = [0,0]
+    #Total number of points the team has scored [white,red]. Used for determining the overall winner of a match if tied on wins.
+    totalPoints = [0,0]
 
-    #results array - outer array is fights. Inner array is 'white points','red points','status of fight' (notStarted, started, finished)
+    #results array - outer array is fights. Inner array is 'white points','red points','status of fight' (notStarted, started, finished). Used to determine who won an individual fight.
     results = [[0,0,'started'],[0,0,'notStarted'],[0,0,'notStarted'],[0,0,'notStarted'],[0,0,'notStarted'],[0,0,'notStarted']]
 
-    #string values of points, penalties and draws in lists for each fight.
+    #string values of points, penalties and draws in lists for each fight. Keeps track of actual ippon etc, used in keeping the board displaying the correct info but could possibly be used for exporting a record of the match.
     redIppon = [['',''],['',''],['',''],['',''],['',''],['','']]
     whiteIppon = [['',''],['',''],['',''],['',''],['',''],['','']]
     redHansoku = ['','','','','','']
@@ -209,14 +205,7 @@ def MAIN():
             a.addHansoku('red','white',fn,0, window,whiteIppon,redIppon,totalPoints,wins,results,actionLog,whiteHansoku,redHansoku)
 
         if event == 'b0':
-            print('whitePoints Out of Sub: ', whitePoints)
-            #print('whiteIppon: ', whiteIppon)
-            #print('Results: ', results)
             a.updateIpponColumn('M','white',fn,0,window,whiteIppon,redIppon,totalPoints,wins,results,actionLog)
-            print('whitePoints Out of Sub: ', whitePoints)
-            print(totalPoints)
-            #print('whiteIppon: ', whiteIppon)
-            #print('Results: ', results)
         if event == 'b1':
             a.updateIpponColumn('K','white',fn,0, window,whiteIppon,redIppon,totalPoints,wins,results,actionLog)
         if event == 'b2':
@@ -234,5 +223,4 @@ def MAIN():
         
 
     window.close()
-#MAIN(  whitePoints, redPoints, 0)
 MAIN()

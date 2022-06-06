@@ -14,6 +14,8 @@ It should end up not requiring networking as running a network in a sportshall c
 So far it uses only Python 3.10 and pysimplegui.
 
 I've provided an exe for non-coder windows users to check out. This may trigger you antivirus (it triggers mine). Obviously, procede at your own caution! I can't be responsible for any harm that may occur running this very very alpha stage program on your system.
+## What does it look like?
+![Animation of the board](/documentation/scoreboard.webp)
 ## Keyboard Shortcuts
 q= White Men
 \

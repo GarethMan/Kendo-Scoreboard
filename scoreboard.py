@@ -45,6 +45,7 @@ def inputTeam(colour, nl, playersVisible):
         ,[sg.Button('OK')]
         ]
     window = sg.Window('White Team', layout).Finalize()
+    print(window.get_screen_size())
     while True:
         event, values = window.read()
         print(event)

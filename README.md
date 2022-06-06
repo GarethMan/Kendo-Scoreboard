@@ -50,7 +50,7 @@ Now
 * Reinitializing the board -Done
 
 Bugs!
-* -Cannot Put a score in daihosen without triggering an error that crashes the exe version.-
+* Cannot Put a score in daihosen without triggering an error that crashes the exe version.-Done
 * Undo on blank board (i.e. no ippon etc) errors.
 * Lot's more
 

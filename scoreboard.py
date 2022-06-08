@@ -44,7 +44,7 @@ def inputTeam(colour, nl, playersVisible):
         ,[sg.Push(),sg.Text('5', visible=playersVisible), sg.Input('', size=(20, 1), key='p5', visible=playersVisible)]
         ,[sg.Button('OK')]
         ]
-    window = sg.Window('White Team', layout).Finalize()
+    window = sg.Window(colour.title() + ' Team', layout, finalize=True)
     print(window.get_screen_size())
     while True:
         event, values = window.read()

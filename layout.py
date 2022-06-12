@@ -1,5 +1,8 @@
 import PySimpleGUI as sg
 def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIppon,wins,currentWhiteTeam,currentRedTeam,nextWhiteTeam,nextRedTeam,totalPoints,nl):
+
+    print(redNames)
+    print(redNames['Player 1'])
     layout = [  [sg.Text('', size=(2, 1), key='blank0')
                      ,sg.VerticalSeparator()
                      ,sg.Text(currentWhiteTeam, size=(nl, 1), key='whiteName')
@@ -26,7 +29,7 @@ def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIp
                     ,[sg.HorizontalSeparator()]
                     ,[sg.Text('1', size=(2, 1), key='white0', background_color='grey')
                      ,sg.VerticalSeparator()
-                     ,sg.Text(whiteNames[0], size=(nl, 1), key='whiteNames[0]')
+                     ,sg.Text(whiteNames['Player 1'], size=(nl, 1), key="whiteNames['Player 1']")
                      ,sg.Push()
                      ,sg.VerticalSeparator()
                      ,sg.Text(whiteIppon[0][0], size=(2, 1), justification = 'center', key='whiteIppon[0][0]')
@@ -44,13 +47,13 @@ def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIp
                      ,sg.Text(redIppon[0][0], size=(2, 1), justification = 'center', key='redIppon[0][0]')
                      ,sg.VerticalSeparator()
                      ,sg.Push()
-                     ,sg.Text(redNames[0], size=(nl, 1), justification = 'right', key='redNames[0]')
+                     ,sg.Text(redNames['Player 1'], size=(nl, 1), justification = 'right', key="redNames['Player 1']")
                      ,sg.VerticalSeparator()
                      ,sg.Text('1', size=(2, 1), key='red0', justification = 'right', background_color='grey')]
                     ,[sg.HorizontalSeparator()]
                     ,[sg.Text('2', size=(2, 1), key='white1')
                      ,sg.VerticalSeparator()
-                     ,sg.Text(whiteNames[1], size=(nl, 1), key='whiteNames[1]')
+                     ,sg.Text(whiteNames['Player 2'], size=(nl, 1), key="whiteNames['Player 2']")
                      ,sg.Push()
                      ,sg.VerticalSeparator()
                      ,sg.Text(whiteIppon[1][0], size=(2, 1), justification = 'center', key='whiteIppon[1][0]')
@@ -68,13 +71,13 @@ def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIp
                      ,sg.Text(redIppon[1][0], size=(2, 1), justification = 'center', key='redIppon[1][0]')
                      ,sg.VerticalSeparator()
                      ,sg.Push()
-                     ,sg.Text(redNames[1], size=(nl, 1), justification = 'right', key='redNames[1]')
+                     ,sg.Text(redNames['Player 2'], size=(nl, 1), justification = 'right', key="redNames['Player 2']")
                      ,sg.VerticalSeparator()
                      ,sg.Text('2', size=(2, 1), justification = 'right', key='red1')]
                     ,[sg.HorizontalSeparator()]
                     ,[sg.Text('3', size=(2, 1), key='white2')
                      ,sg.VerticalSeparator()
-                     ,sg.Text(whiteNames[2], size=(nl, 1), key='whiteNames[2]')
+                     ,sg.Text(whiteNames['Player 3'], size=(nl, 1), key="whiteNames['Player 3']")
                      ,sg.Push()
                      ,sg.VerticalSeparator()
                      ,sg.Text(whiteIppon[2][0], size=(2, 1), justification = 'center', key='whiteIppon[2][0]')
@@ -92,13 +95,13 @@ def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIp
                      ,sg.Text(redIppon[2][0], size=(2, 1), justification = 'center', key='redIppon[2][0]')
                      ,sg.VerticalSeparator()
                      ,sg.Push()
-                     ,sg.Text(redNames[2], size=(nl, 1), justification = 'right', key='redNames[2]')
+                     ,sg.Text(redNames['Player 3'], size=(nl, 1), justification = 'right', key="redNames['Player 3']")
                      ,sg.VerticalSeparator()
                      ,sg.Text('3', size=(2, 1), justification = 'right', key='red2')]
                     ,[sg.HorizontalSeparator()]
                     ,[sg.Text('4', size=(2, 1), key='white3')
                      ,sg.VerticalSeparator()
-                     ,sg.Text(whiteNames[3], size=(nl, 1), key='whiteNames[3]')
+                     ,sg.Text(whiteNames['Player 4'], size=(nl, 1), key="whiteNames['Player 4']")
                      ,sg.Push()
                      ,sg.VerticalSeparator()
                      ,sg.Text(whiteIppon[3][0], size=(2, 1), justification = 'center', key='whiteIppon[3][0]')
@@ -116,13 +119,13 @@ def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIp
                      ,sg.Text(redIppon[3][0], size=(2, 1), justification = 'center', key='redIppon[3][0]')
                      ,sg.VerticalSeparator()
                      ,sg.Push()
-                     ,sg.Text(redNames[3], size=(nl, 1), justification = 'right', key='redNames[3]')
+                     ,sg.Text(redNames['Player 4'], size=(nl, 1), justification = 'right', key="redNames['Player 4']")
                      ,sg.VerticalSeparator()
                      ,sg.Text('4', size=(2, 1), justification = 'right', key='red3')]
                     ,[sg.HorizontalSeparator()]
                     ,[sg.Text('5', size=(2, 1), key='white4')
                      ,sg.VerticalSeparator()
-                     ,sg.Text(whiteNames[4], size=(nl, 1), key='whiteNames[4]')
+                     ,sg.Text(whiteNames['Player 5'], size=(nl, 1), key="whiteNames['Player 5']")
                      ,sg.Push()
                      ,sg.VerticalSeparator()
                      ,sg.Text(whiteIppon[4][0], size=(2, 1), justification = 'center', key='whiteIppon[4][0]')
@@ -140,7 +143,7 @@ def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIp
                      ,sg.Text(redIppon[4][0], size=(2, 1), justification = 'center', key='redIppon[4][0]')
                      ,sg.VerticalSeparator()
                      ,sg.Push()
-                     ,sg.Text(redNames[4], size=(nl, 1), justification = 'right', key='redNames[4]')
+                     ,sg.Text(redNames['Player 5'], size=(nl, 1), justification = 'right', key="redNames['Player 5']")
                      ,sg.VerticalSeparator()
                      ,sg.Text('5', size=(2, 1), justification = 'right', key='red4')]
                     ,[sg.HorizontalSeparator()]
@@ -173,11 +176,11 @@ def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIp
                       ,sg.Text('Wins: ' + str(wins[1]) + '  Points: ' + str(totalPoints[1]), key='redSum')]
                     ,[sg.HorizontalSeparator()]
                     ,[sg.Push(),sg.Text('', key='victor'),sg.Push()]
-                    ,[sg.Text(nextWhiteTeam, key='nextWhiteTeam')
+                    ,[sg.Text(nextWhiteTeam['Team Name'], key='nextWhiteTeam')
                       ,sg.Push()
                       ,sg.Text('Next Match', key='nextMatch')
                       ,sg.Push()
-                      ,sg.Text(nextRedTeam, text_color ='White', background_color='red', justification = 'right', key='nextRedTeam')
+                      ,sg.Text(nextRedTeam['Team Name'], text_color ='White', background_color='red', justification = 'right', key='nextRedTeam')
                     ]
                     ,[sg.HorizontalSeparator()]
                     ,[sg.Button('M', button_color=('black', 'white'), key='b0')
@@ -212,7 +215,7 @@ def layout(whiteNames,redNames,whiteIppon,whiteHansoku,hikiwake,redHansoku,redIp
                     ]
     return layout
 
-def fontResize(fs, window):
+def fontResize(fs, window, numberOfPlayersToShow):
     [window[f'blank{i}'].Update(font=('arial',fs)) for i in range(0,9)]
     window['whiteName'].Update(font=('arial',fs))
     window['redName'].Update(font=('arial',fs))
@@ -224,8 +227,8 @@ def fontResize(fs, window):
     window['victor'].Update(font=('arial',fs))
     [window[f'white{i}'].Update(font=('arial',fs)) for i in range(0,6)]
     [window[f'red{i}'].Update(font=('arial',fs)) for i in range(0,6)]
-    [window[f'whiteNames[{i}]'].Update(font=('arial',fs)) for i in range(0,6)]
-    [window[f'redNames[{i}]'].Update(font=('arial',fs)) for i in range(0,6)]
+    [window[f"whiteNames['Player {i + 1}']"].Update(font=('arial',fs)) for i in range(0,numberOfPlayersToShow)]
+    [window[f"redNames['Player {i + 1}']"].Update(font=('arial',fs)) for i in range(0,numberOfPlayersToShow)]
     [window[f'whiteIppon[{i}][0]'].Update(font=('arial',fs)) for i in range(0,6)]
     [window[f'whiteIppon[{i}][1]'].Update(font=('arial',fs)) for i in range(0,6)]
     [window[f'whiteHansoku[{i}]'].Update(font=('arial',fs)) for i in range(0,6)]

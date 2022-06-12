@@ -1,2 +1,6 @@
 __pycache__/
 .vscode/
+
+# Jetbrains PyCharm config files:
+.idea/
+PyCharm Project Files/

@@ -138,8 +138,8 @@ def nextFight(actionLog,window,results,hikiwake,wins,totalPoints,fn,currentWhite
             if daihosen == 'Yes':
                 fn = 5
                 window['victor'].Update('Daihosen')
-                whiteD = selectPlayer('Select ' + currentWhiteTeam + ' representative', whiteNames,window)[0]
-                redD = selectPlayer('Select ' + currentRedTeam + ' representative', redNames,window)[0]
+                whiteD = selectPlayer('Select ' + currentWhiteTeam + ' representative', whiteNames,window)#[0]
+                redD = selectPlayer('Select ' + currentRedTeam + ' representative', redNames,window)#[0]
                 window['white5'].Update('D')
                 window['whiteNames[5]'].Update(whiteD)
                 window['redNames[5]'].Update(redD)

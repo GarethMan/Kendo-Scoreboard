@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 import ast
 import scoreboard as scoreboard
 import csv
+import sys
 
 def chooseInputMode():
     layout = [
@@ -95,6 +96,34 @@ def inputTeam(colour, nl, playersVisible):
             print('OVER')
     window.close()
 
+def selectTeam(text, data):
+
+    layout = [
+        [sg.Text(text)],
+        [sg.Listbox(data, size=(50,20), key='SELECTED')],
+        [sg.Button('OK')],
+    ]
+    
+    window = sg.Window('POPUP', layout).Finalize()
+    
+    while True:
+        event, values = window.read()
+
+        if event == sg.WINDOW_CLOSED:
+            sys.exit()
+            break
+        elif event == 'OK':
+            break
+        else:
+            print('OVER')
+
+    window.close()
+
+    print('[GUI_POPUP] event:', event)
+    print('[GUI_POPUP] values:', values)
+
+    if values and values['SELECTED']:
+        return values['SELECTED']    
 
 def MAIN():
     # Initialize a list that tracks actions (e.g awarding a point). Used for the undo action.
@@ -113,23 +142,30 @@ def MAIN():
         # Team input
         currentWhiteTeam = inputTeam('white', nl, True)
         currentRedTeam = inputTeam('red', nl, True)
-
+        
         # get the team names
-        nextWhiteTeam = inputTeam('next white', nl, False)[0]
-        nextRedTeam = inputTeam('next red', nl, False)[0]
+        nextWhiteTeam = inputTeam('next white', nl, False)#[0]
+        nextRedTeam = inputTeam('next red', nl, False)#[0]
 
         scoreboard.runSelectedMatches(actionLog, currentWhiteTeam, currentRedTeam, nextWhiteTeam, nextRedTeam, nl)
 
     else:
+        keeprunning = True
+        while keeprunning == True:
+            # Team input
+            print('INPUT=')
+            print(len(input))
+            print(input[0])
+            #selectWhite = selectTeam('Select White Team',input)
+            #print(selectWhite[0])
+            currentWhiteTeam = selectTeam('Select White Team',input)[0]
+            currentRedTeam = selectTeam('Select Red Team',input)[0]
+            # get the team names
+            nextWhiteTeam = selectTeam('Select Next White Team',input)[0]
+            nextRedTeam = selectTeam('Select Next Red Team',input)[0]
+            scoreboard.runSelectedMatches(actionLog, currentWhiteTeam, currentRedTeam, nextWhiteTeam, nextRedTeam, nl)
 
-        # Team input
-        currentWhiteTeam = input[0]
-        currentRedTeam = input[6]
+        
 
-        # get the team names
-        nextWhiteTeam = input[7]
-        nextRedTeam = input[4]
-
-        scoreboard.runSelectedMatches(actionLog, currentWhiteTeam, currentRedTeam, nextWhiteTeam, nextRedTeam, nl)
 
 MAIN()

@@ -107,6 +107,8 @@ def runSelectedMatches(actionLog, currentWhiteTeam, currentRedTeam, nextWhiteTea
         # fs = round(window.size[1]/17)
         # l.fontResize(fs, window)
         if event == 'b5':
+            print(redHansoku)
+            print(whiteTeamPlayerNames['Player ' + str(fn+1)] + ',' + whiteIppon[fn][0] + ',' + whiteIppon[fn][1] + ',' + whiteHansoku[fn] + ',' + redHansoku[fn] + ',' + redIppon[fn][1] + ',' + redIppon[fn][0] + ',' + redTeamPlayerNames['Player ' + str(fn+1)])
             fn, nextAction = actions.nextFight(actionLog, window, results, hikiwake, wins, totalPoints, fn, whiteTeamName,
                                                redTeamName, whiteTeamPlayerNames, redTeamPlayerNames)
             if nextAction == 'New':
